@@ -579,4 +579,8 @@ tbody tr:last-child td { border-bottom: 0; }
   .actions, .step-topline { flex-direction: column; align-items: stretch; }
   .builder-actions { flex-direction: column; }
   .graph-svg { max-width: 100%; }
+  .left-stack { display: contents; }
+  .input-panel { order: 1; }
+  .builder-side-panel { order: 2; }
+  .summary-panel { order: 3; }
 }
