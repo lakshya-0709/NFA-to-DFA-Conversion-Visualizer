@@ -17,6 +17,11 @@ q3,1=`,
 };
 
 const elements = {
+  topLayout: document.querySelector(".top-layout"),
+  leftStack: document.querySelector(".left-stack"),
+  inputPanel: document.querySelector(".input-panel"),
+  summaryPanel: document.querySelector(".summary-panel"),
+  builderSidePanel: document.querySelector(".builder-side-panel"),
   statesInput: document.getElementById("statesInput"),
   alphabetInput: document.getElementById("alphabetInput"),
   startStateInput: document.getElementById("startStateInput"),
@@ -53,6 +58,34 @@ const appState = {
   currentNfa: null,
   currentDfa: null,
 };
+
+function applyResponsiveTopLayoutOrder() {
+  const isNarrowLayout = window.matchMedia("(max-width: 1100px)").matches;
+  const { topLayout, leftStack, inputPanel, summaryPanel, builderSidePanel } = elements;
+
+  if (!topLayout || !leftStack || !inputPanel || !summaryPanel || !builderSidePanel) {
+    return;
+  }
+
+  if (isNarrowLayout) {
+    if (builderSidePanel.parentElement !== leftStack || inputPanel.nextElementSibling !== builderSidePanel) {
+      leftStack.insertBefore(builderSidePanel, summaryPanel);
+    }
+    return;
+  }
+
+  if (inputPanel.parentElement !== leftStack) {
+    leftStack.prepend(inputPanel);
+  }
+
+  if (summaryPanel.parentElement !== leftStack) {
+    leftStack.appendChild(summaryPanel);
+  }
+
+  if (builderSidePanel.parentElement !== topLayout || leftStack.nextElementSibling !== builderSidePanel) {
+    topLayout.insertBefore(builderSidePanel, leftStack.nextElementSibling);
+  }
+}
 
 function splitCsv(value) {
   return value.split(",").map((item) => item.trim()).filter(Boolean);
@@ -1333,6 +1366,8 @@ elements.buildTransitionGridBtn.addEventListener("click", renderTransitionBuilde
 elements.syncTransitionGridBtn.addEventListener("click", syncTransitionGridToTextarea);
 elements.statesInput.addEventListener("input", renderTransitionBuilder);
 elements.alphabetInput.addEventListener("input", renderTransitionBuilder);
+window.addEventListener("resize", applyResponsiveTopLayoutOrder);
 
+applyResponsiveTopLayoutOrder();
 loadSample();
 generate();
