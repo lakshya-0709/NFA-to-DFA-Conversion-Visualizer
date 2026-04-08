@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NFA to DFA Subset Construction Visualizer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Theory Of Automata and Formal Language</p>
+        <h1>NFA to DFA Visualizer</h1>
+        <p class="hero-text">
+          Explore subset construction step by step, including epsilon-closure. Enter an NFA,
+          generate the equivalent DFA, and watch how sets of NFA states become single DFA states.
+        </p>
+      </div>
+      <div class="hero-card">
+        <div class="stat">
+          <span class="stat-label">Input</span>
+          <strong>NFA definition</strong>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Process</span>
+          <strong>Subset construction</strong>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Output</span>
+          <strong>Equivalent DFA</strong>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <div class="top-layout">
+        <div class="left-stack">
+          <section class="panel input-panel">
+            <div class="panel-header">
+              <h2>NFA Input</h2>
+              <button id="loadSampleBtn" class="secondary-btn" type="button">Load Sample</button>
+            </div>
+
+            <div class="form-grid">
+              <label>
+                <span>States</span>
+                <input id="statesInput" type="text" value="q0,q1,q2" placeholder="q0,q1,q2">
+              </label>
+              <label>
+                <span>Alphabet</span>
+                <input id="alphabetInput" type="text" value="0,1" placeholder="0,1">
+              </label>
+              <label>
+                <span>Start State</span>
+                <input id="startStateInput" type="text" value="q0" placeholder="q0">
+              </label>
+              <label>
+                <span>Final States</span>
+                <input id="finalStatesInput" type="text" value="q2" placeholder="q2">
+              </label>
+            </div>
+
+            <textarea id="transitionsInput" class="hidden-textarea" rows="10" spellcheck="false" aria-hidden="true"></textarea>
+          </section>
+
+          <section class="panel summary-panel">
+            <div class="panel-header">
+              <h2>Construction Summary</h2>
+            </div>
+            <div id="summaryCards" class="summary-cards">
+              <article class="summary-card">
+                <span class="card-label">Start subset</span>
+                <strong>Not generated yet</strong>
+              </article>
+              <article class="summary-card">
+                <span class="card-label">E-closure of start</span>
+                <strong>0</strong>
+              </article>
+              <article class="summary-card">
+                <span class="card-label">Reachable DFA states</span>
+                <strong>0</strong>
+              </article>
+              <article class="summary-card">
+                <span class="card-label">Accepting DFA states</span>
+                <strong>0</strong>
+              </article>
+            </div>
+            <div id="stateNamingGuide" class="state-guide empty-state">
+              Generate the DFA to see how each subset is renamed as a clean DFA state such as D0, D1, and D2.
+            </div>
+          </section>
+        </div>
+
+        <section class="panel builder-side-panel">
+          <div class="panel-header">
+            <h2>Transition Builder</h2>
+            <div class="builder-actions">
+              <button id="buildTransitionGridBtn" class="secondary-btn" type="button">Build Grid</button>
+              <button id="syncTransitionGridBtn" class="ghost-btn" type="button">Use Grid Values</button>
+            </div>
+          </div>
+          <p class="builder-text">Use the dropdowns to select target states from the NFA state list. You can still type comma-separated values like <code>q1,q2</code> if you prefer.</p>
+          <div id="transitionGridContainer" class="table-wrap empty-state">Build the grid after entering states and alphabet to fill transitions faster.</div>
+          <div class="actions">
+            <button id="generateBtn" class="primary-btn" type="button">Generate DFA</button>
+            <button id="resetBtn" class="ghost-btn" type="button">Reset</button>
+          </div>
+          <div id="messageBox" class="message-box" aria-live="polite"></div>
+        </section>
+      </div>
+
+      <section class="panel wide-panel graph-panel graph-panel-stacked">
+        <div class="panel-header">
+          <h2>Original NFA</h2>
+        </div>
+        <div id="nfaGraph" class="graph-canvas empty-state">The NFA graph will appear here.</div>
+      </section>
+
+      <section class="panel wide-panel">
+        <div class="panel-header">
+          <h2>Step-by-Step Subset Construction</h2>
+        </div>
+        <div id="stepsContainer" class="steps-container empty-state">
+          Generate the DFA to see each new subset, the transitions explored, and which subsets become accepting states.
+        </div>
+        <div id="stepControlsBottom" class="step-controls hidden-controls step-controls-bottom">
+          <button id="prevStepBtnBottom" class="ghost-btn" type="button">Previous</button>
+          <span id="stepCounterBottom" class="step-counter">Step 0 of 0</span>
+          <button id="nextStepBtnBottom" class="secondary-btn" type="button">Next</button>
+          <button id="toggleAllStepsBtnBottom" class="primary-btn" type="button">Show All Steps</button>
+        </div>
+        <div id="stepCompletionBar" class="step-controls hidden-controls step-controls-bottom">
+          <button id="prevStepBtnComplete" class="ghost-btn" type="button">Previous</button>
+          <span id="stepCompletionText" class="step-counter">Step 0 of 0 completed</span>
+        </div>
+      </section>
+
+      <section class="panel wide-panel graph-panel graph-panel-stacked">
+        <div class="panel-header">
+          <h2>Equivalent DFA</h2>
+        </div>
+        <div id="dfaGraph" class="graph-canvas empty-state">The DFA graph will appear here after construction.</div>
+      </section>
+
+      <section class="panel table-panel">
+        <div class="panel-header">
+          <h2>NFA Transition Table</h2>
+        </div>
+        <div id="nfaTableContainer" class="table-wrap empty-state">The parsed NFA transition table will appear here.</div>
+      </section>
+
+      <section class="panel table-panel">
+        <div class="panel-header">
+          <h2>DFA Transition Table</h2>
+        </div>
+        <div id="dfaTableContainer" class="table-wrap empty-state">The generated DFA transition table will appear here.</div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
